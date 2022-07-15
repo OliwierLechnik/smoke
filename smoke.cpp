@@ -4,12 +4,76 @@
 #include <cmath>
 #include <vector>
 
+const float DEG_TO_RAD =  M_PI/180;
+
 class Smoke {
 
+    struct Particle {
+    public:
+
+        // some constants for easy editon in the future
+        const float airFriction = 0.997;
+        const float upwardForce = 0;
+        const float angularFriction = 0.997;
+        const int angleRandomness = 45; // max deviation in each direction. [degrees] 
+        const int sizeRandomness = 50; // +- max deviation in size. [percentage]
+        const int speedRandomness = 30; // +- max deviation in speed. [percentage]
+
+        sf::Vector2f pos; // position
+        sf::Vector2f vel; // velocity
+        sf::Vector2f scale;
+        
+        float lifetime;
+        float wVel; // angular velocity
+        float rotation;
+
+        Particle (
+                    sf::Vector2f startPos,
+                    float speed,
+                    float angle,
+                    float size,
+                    float dTime = 0.f // for more continous movement (not nececery)
+            ) {
+
+            // randomise input
+            speed = (1+(rand()%(2*speedRandomness)-speedRandomness)/100)*speed;
+            angle = angle + rand()%(2*angleRandomness)-angleRandomness;
+            size  = (1+(+rand()%(2*sizeRandomness)-sizeRandomness)/100)*size;
+
+            // rest of setting up
+            this-> pos = startPos;
+
+            this->vel = {
+                -cos(angle*DEG_TO_RAD)*speed,
+                sin(angle*DEG_TO_RAD)*speed
+            };
+
+            this->scale = {
+                size,
+                size
+            };
+
+            this->rotation = rand()%36000/100.f;
+
+            this-> wVel = rand()/36000/100.f-180.f;
+
+            this->update(dTime);
+            
+        }
+
+        void update (
+            float dTime
+            ) {
+
+        }
+
+    };
 
 public:
 
-    Smoke () {
+    Smoke (
+
+        ) {
         
     }
 
