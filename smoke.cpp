@@ -9,12 +9,11 @@ const float DEG_TO_RAD =  M_PI/180;
 class Smoke {
 
     struct Particle {
-    public:
 
         // some constants for easy editon in the future
-        const float airFriction = 0.997;
+        const float airFriction = 0.03;
         const float upwardForce = 0;
-        const float angularFriction = 0.997;
+        const float angularFriction = 0.03;
         const int angleRandomness = 45; // max deviation in each direction. [degrees] 
         const int sizeRandomness = 50; // +- max deviation in size. [percentage]
         const int speedRandomness = 30; // +- max deviation in speed. [percentage]
@@ -57,14 +56,24 @@ class Smoke {
 
             this-> wVel = rand()/36000/100.f-180.f;
 
-            this->update(dTime);
-            
+            this->lifetime = 0.f;
+
+            this->update(rand()%(int)(dTime*100)/100.f);
         }
 
         void update (
             float dTime
             ) {
+                lifetime += dTime;
+                // apply forces
+                vel = vel * (1-airFriction*dTime);
+                vel.y -= upwardForce;
+                wVel = wVel * (1-angularFriction*dTime);
 
+                //apply velocities
+
+                pos = pos + dTime * vel;
+                rotation = rotation + dTime * wVel;
         }
 
     };
