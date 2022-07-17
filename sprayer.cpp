@@ -20,7 +20,7 @@ class Sprayer : public sf::Drawable {
 
     void update (
         float dTime, 
-        float dencity,
+        float density,
         float speed,
         float rotation, 
         sf::Vector2f position
@@ -32,23 +32,25 @@ class Sprayer : public sf::Drawable {
             tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
             tip.y = pos.y+sin((rot-90)*DEG_TO_RAD)*30;
 
+            smoke.update(dTime, tip, rotation, density, speed);
+
     }
 
     void update (
         float dTime,
-        float dencity,
+        float density,
         float speed
         ) {
-        update(dTime, dencity, speed, rot, pos);
+        update(dTime, density, speed, rot, pos);
     }
 
     void update (
         float dTime,
-        float dencity,
+        float density,
         float speed,
         float rotation
         ) {
-        update(dTime, dencity, speed, rotation, pos);
+        update(dTime, density, speed, rotation, pos);
     }
 
 
@@ -56,6 +58,8 @@ class Sprayer : public sf::Drawable {
             sf::RenderTarget& target,
             sf::RenderStates states
         ) const {
+
+        target.draw(smoke);
         
         const float whiter = 15;
         const float redr = 12;
@@ -66,6 +70,7 @@ class Sprayer : public sf::Drawable {
         sf::RectangleShape redrect;
         sf::CircleShape redcenter;
         sf::ConvexShape redtip;
+
 
         whitebg.setOrigin({whiter,whiter});
         whitebg.setRadius(whiter);

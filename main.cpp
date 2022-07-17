@@ -11,9 +11,7 @@ int main () {
     settings.antialiasingLevel = 8;
 
     sf::RenderWindow window(sf::VideoMode(1200,800), "title", sf::Style::Default, settings);
-    window.setFramerateLimit(60);
-
-    
+    window.setFramerateLimit(15);
 
     Sprayer sprayer({360,400}, 90);
     sf::Mouse mouse;
@@ -31,11 +29,13 @@ int main () {
 
         float angle = atan2(mPos.x-360,400-mPos.y);
 
+        float power = 0;
         if(mouse.isButtonPressed(sf::Mouse::Left)) {
-            
+            power = 250;
         }
 
-        sprayer.update(dTime.asSeconds(),0,0,angle*RAD_TO_DEG);
+
+        sprayer.update(dTime.asSeconds(),power,125,angle*RAD_TO_DEG);
 
         window.clear();
         window.draw(sprayer);
