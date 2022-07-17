@@ -2,18 +2,19 @@
 
 #include "utensils.cpp"
 
-class Smoke {
+class Smoke : public sf::Drawable {
 
     struct Particle {
 
         // some constants for easy editon in the future
         constexpr static const float airFriction = 0.03;
         constexpr static const float upwardForce = 0;
-        constexpr static const float angularFriction = 0.03;
-        constexpr static const int angleRandomness = 45; // max deviation in each direction. [degrees] 
+        constexpr static const float angularFriction = 1.2;
+        constexpr static const int angleRandomness = 15; // max deviation in each direction. [degrees] 
         constexpr static const int sizeRandomness = 50; // +- max deviation in size. [percentage]
         constexpr static const int speedRandomness = 30; // +- max deviation in speed. [percentage]
         constexpr static const float maxLifetime = 3;
+        constexpr static const float scaleGrowthFactor = 1; // 
 
         sf::Vector2f pos; // position
         sf::Vector2f vel; // velocity
@@ -40,18 +41,20 @@ class Smoke {
             this-> pos = startPos;
 
             this->vel = {
-                -cos(angle*DEG_TO_RAD)*speed,
-                sin(angle*DEG_TO_RAD)*speed
+                sin(angle*DEG_TO_RAD)*speed,
+                -cos(angle*DEG_TO_RAD)*speed
             };
 
+            float scaleRand = 1 + (rand()%(2*sizeRandomness)-sizeRandomness) / 100.f;
+
             this->scale = {
-                size,
-                size
+                size * scaleRand,
+                size * scaleRand
             };
 
             this->rotation = rand()%36000/100.f;
 
-            this-> wVel = rand()/36000/100.f-180.f;
+            this-> wVel = rand()%144000/100.f-720.f;
 
             this->lifetime = 0.f;
 
@@ -77,16 +80,20 @@ class Smoke {
                 rotation = rotation + dTime * wVel;
         }
 
+        sf::Vector2f getScale ( ) {
+            return scale * lifetime * scaleGrowthFactor;
+        }
+
     };
 
+
     std::vector <Particle> particles;
-    sf::Sprite sprite; // partiles dont have own sprite. 1 sprite will be used to draw all of them
     sf::Texture txt;
-    sf::Color color; // white by default
 
 public:
 
     Smoke ( ) {
+        txt.loadFromFile("smoke.png");
     }
 
     void update(
@@ -111,6 +118,10 @@ public:
         //     }
         // }
 
+        for(Particle& i : particles){
+            i.update(dTime);
+        }
+
         remove_erase_if(particles, [](Particle& ptr)->bool{
             if(ptr.getLifetimeRatio() >= 1){
                 return true;
@@ -121,7 +132,7 @@ public:
         // #2
         float nptm = dTime * density; // amount of new particles to make
         int confident = floor(nptm);
-        float poap = nptm - confident; // propability of aditional particle
+        float poap = nptm - (float)confident; // propability of aditional particle
         
         if(rand()%1000/1000.f <= poap) confident += 1;
 
@@ -143,9 +154,24 @@ public:
             sf::RenderStates states
         ) const {
 
-        sf::CircleShape crl(50);
+        sf::Sprite sprite;
+        sprite.setTexture(txt);
+        sprite.setOrigin({
+            sprite.getTextureRect().width/2,
+            sprite.getTextureRect().height/2,
+        });
+        
+        for(Particle i : particles){
+            float ratio = i.getLifetimeRatio();
 
-        target.draw(crl,states);
+            sprite.setPosition(i.pos);
+            sprite.setScale(i.getScale());
+            sprite.setRotation(i.rotation);
+            sprite.setColor(sf::Color(255,255,255,40-40*ratio+1));
+
+            target.draw(sprite);
+        }
+
     }
 
 };
