@@ -1,7 +1,0 @@
-make --dry-run --keep-going --print-directory
-make: Entering directory '/home/olile/Documents/Programming/CPP/window/smoke'
-g++ -c main.cpp
-g++ main.o -o main -lsfml-graphics -lsfml-window -lsfml-system
-./main
-make: Leaving directory '/home/olile/Documents/Programming/CPP/window/smoke'
- 
