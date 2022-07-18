@@ -11,7 +11,7 @@ int main () {
     settings.antialiasingLevel = 8;
 
     sf::RenderWindow window(sf::VideoMode(1200,800), "title", sf::Style::Default, settings);
-    window.setFramerateLimit(15);
+    window.setFramerateLimit(60);
 
     Sprayer sprayer({360,400}, 90);
     sf::Mouse mouse;
@@ -31,7 +31,7 @@ int main () {
 
         float power = 0;
         if(mouse.isButtonPressed(sf::Mouse::Left)) {
-            power = 250;
+            power = 100;
         }
 
 

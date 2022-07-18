@@ -58,7 +58,7 @@ class Smoke : public sf::Drawable {
 
             this->lifetime = 0.f;
 
-            this->update(rand()%(int)(dTime*100)/100.f);
+            this->update(dTime);
         }
 
         float getLifetimeRatio ( ) {
@@ -99,14 +99,17 @@ public:
     void update(
             float dTime,
             sf::Vector2f pos,
+            sf::Vector2f prevPos,
             float direction,
+            float prevDirection,
             float density, // (averege) smoke particles per second
             float speed
         ) {
 
             // #1 update all particles (if particle lifetime is higher than max lifetime. kill particle)
             // #2 decide how much new particles to make
-            // #3 make those particles
+            // #3 calculate velocity and angular speed to determine where to place new particles (for consistancy)
+            // #4 make those particles
 
         // #1
         // for(std::vector<Particle>::iterator particle = particles.begin(); particle != particles.end(); ){
@@ -137,13 +140,22 @@ public:
         if(rand()%1000/1000.f <= poap) confident += 1;
 
         // #3
+
+        sf::Vector2f r = pos-prevPos; // delta position
+
+        float dAngle = direction - prevDirection;
+
+        // #4
         for(int i = 0; i < confident; i++){
+
+            float rFactor = rand()%1000 / 1000.f;
+
             particles.emplace_back(
-                pos,
+                prevPos+r*rFactor,
                 speed,
-                direction,
-                0.1,
-                dTime
+                prevDirection+dAngle*(rFactor),
+                0.125,
+                dTime*(1-rFactor)
             );
         }
 
@@ -167,7 +179,7 @@ public:
             sprite.setPosition(i.pos);
             sprite.setScale(i.getScale());
             sprite.setRotation(i.rotation);
-            sprite.setColor(sf::Color(255,255,255,40-40*ratio+1));
+            sprite.setColor(sf::Color(255,255,255,20-20*ratio+1));
 
             target.draw(sprite);
         }

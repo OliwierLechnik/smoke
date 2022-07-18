@@ -9,14 +9,19 @@ class Sprayer : public sf::Drawable {
 
     sf::Vector2f pos; // center of mass
     sf::Vector2f tip; // place where the smoke is commit from
+    sf::Vector2f prevTip;
     float rot; // rotation
+    float prevRot;
 
     Smoke smoke;
 
     public:
 
-    Sprayer () : pos({0,0}), rot(0) { }
-    Sprayer (sf::Vector2f position, float rotation) : pos(position), rot(rotation) { }
+    Sprayer () : pos({0,0}), rot(0), prevRot(0) { }
+    Sprayer (sf::Vector2f position, float rotation) : pos(position), rot(rotation), prevRot(rotation) {
+            tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
+            tip.y = pos.y+sin((rot-90)*DEG_TO_RAD)*30;
+    }
 
     void update (
         float dTime, 
@@ -26,13 +31,16 @@ class Sprayer : public sf::Drawable {
         sf::Vector2f position
         ) {
             pos = position;
+
+            prevRot = rot;
             rot = rotation;
 
-            
+            prevTip = tip;
             tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
             tip.y = pos.y+sin((rot-90)*DEG_TO_RAD)*30;
 
-            smoke.update(dTime, tip, rotation, density, speed);
+            smoke.update(dTime, tip, prevTip, rot, prevRot, density, speed);
+
 
     }
 
@@ -74,12 +82,12 @@ class Sprayer : public sf::Drawable {
 
         whitebg.setOrigin({whiter,whiter});
         whitebg.setRadius(whiter);
-        whitebg.setFillColor(sf::Color::White);
+        whitebg.setFillColor(sf::Color(0xffcc00ff));
         whitebg.setPosition(pos);
 
         redcenter.setOrigin({redr,redr});
         redcenter.setRadius(redr);
-        redcenter.setFillColor(sf::Color::Red);
+        redcenter.setFillColor(sf::Color(0x9966ffff));
         redcenter.setPosition(pos);
   
         whitetip.setPointCount(3);
@@ -92,7 +100,7 @@ class Sprayer : public sf::Drawable {
             pos.y+sin((rot+60-90)*DEG_TO_RAD)*whiter
         });
         whitetip.setPoint(2,tip);
-        whitetip.setFillColor(sf::Color::White);
+        whitetip.setFillColor(sf::Color(0xffcc00ff));
         
         target.draw(whitebg);
         target.draw(whitetip);

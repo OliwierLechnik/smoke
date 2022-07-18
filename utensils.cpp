@@ -7,6 +7,7 @@
 const float DEG_TO_RAD =  M_PI/180;
 const float RAD_TO_DEG =  180/M_PI;
 
+// removes all values
 template<typename Container, typename Lambda>
 Container&& remove_erase_if( Container&& c, Lambda&& test ) {
   using std::begin; using std::end;
