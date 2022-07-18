@@ -7,11 +7,11 @@ class Smoke : public sf::Drawable {
     struct Particle {
 
         // some constants for easy editon in the future
-        constexpr static const float airFriction = 0.03;
-        constexpr static const float upwardForce = 0;
+        constexpr static const float airFriction = 0.25;
+        constexpr static const float upwardForce = 1;
         constexpr static const float angularFriction = 1.2;
         constexpr static const int angleRandomness = 15; // max deviation in each direction. [degrees] 
-        constexpr static const int sizeRandomness = 50; // +- max deviation in size. [percentage]
+        constexpr static const int sizeRandomness = 30; // +- max deviation in size. [percentage]
         constexpr static const int speedRandomness = 30; // +- max deviation in speed. [percentage]
         constexpr static const float maxLifetime = 3;
         constexpr static const float scaleGrowthFactor = 1; // 
@@ -33,9 +33,9 @@ class Smoke : public sf::Drawable {
             ) {
 
             // randomise input
-            speed = (1+(rand()%(2*speedRandomness)-speedRandomness)/100)*speed;
+            speed = (1+(rand()%(2*speedRandomness)-(float)speedRandomness)/100.f)*speed;
             angle = angle + rand()%(2*angleRandomness)-angleRandomness;
-            size  = (1+(+rand()%(2*sizeRandomness)-sizeRandomness)/100)*size;
+            size  = (1+(+rand()%(2*sizeRandomness)-sizeRandomness)/100.f)*size;
 
             // rest of setting up
             this-> pos = startPos;
@@ -81,7 +81,7 @@ class Smoke : public sf::Drawable {
         }
 
         sf::Vector2f getScale ( ) {
-            return scale * lifetime * scaleGrowthFactor;
+            return scale * (lifetime+0.05f) * scaleGrowthFactor;
         }
 
     };
@@ -144,6 +144,8 @@ public:
         sf::Vector2f r = pos-prevPos; // delta position
 
         float dAngle = direction - prevDirection;
+        if (dAngle > 180) dAngle -= 360; 
+        if (dAngle < -180) dAngle += 360; 
 
         // #4
         for(int i = 0; i < confident; i++){
@@ -154,7 +156,7 @@ public:
                 prevPos+r*rFactor,
                 speed,
                 prevDirection+dAngle*(rFactor),
-                0.125,
+                0.1,
                 dTime*(1-rFactor)
             );
         }
@@ -179,7 +181,7 @@ public:
             sprite.setPosition(i.pos);
             sprite.setScale(i.getScale());
             sprite.setRotation(i.rotation);
-            sprite.setColor(sf::Color(255,255,255,20-20*ratio+1));
+            sprite.setColor(sf::Color(255,200,100,255*(1-ratio)*(1-ratio)));
 
             target.draw(sprite);
         }

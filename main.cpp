@@ -35,7 +35,7 @@ int main () {
         }
 
 
-        sprayer.update(dTime.asSeconds(),power,125,angle*RAD_TO_DEG);
+        sprayer.update(dTime.asSeconds(),power,250,angle*RAD_TO_DEG);
 
         window.clear();
         window.draw(sprayer);

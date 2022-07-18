@@ -13,6 +13,8 @@ class Sprayer : public sf::Drawable {
     float rot; // rotation
     float prevRot;
 
+    //
+
     Smoke smoke;
 
     public:
@@ -25,15 +27,18 @@ class Sprayer : public sf::Drawable {
 
     void update (
         float dTime, 
-        float density,
-        float speed,
-        float rotation, 
+        float desiredDensity,
+        float desiredSpeed,
+        float desiredRotation, 
         sf::Vector2f position
         ) {
             pos = position;
 
             prevRot = rot;
-            rot = rotation;
+            rot = desiredRotation;
+
+            float speed = desiredSpeed;
+            float density = desiredDensity;
 
             prevTip = tip;
             tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
