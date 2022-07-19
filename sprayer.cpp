@@ -11,9 +11,12 @@ class Sprayer : public sf::Drawable {
     sf::Vector2f tip; // place where the smoke is commit from
     sf::Vector2f prevTip;
     float rot; // rotation
+    float prevPower;
+    float powerChangeSpeed;
+    float angularVelocity;
     float prevRot;
 
-    //
+    
 
     Smoke smoke;
 
@@ -23,22 +26,31 @@ class Sprayer : public sf::Drawable {
     Sprayer (sf::Vector2f position, float rotation) : pos(position), rot(rotation), prevRot(rotation) {
             tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
             tip.y = pos.y+sin((rot-90)*DEG_TO_RAD)*30;
+            this->powerChangeSpeed = 0;
+            this->angularVelocity = 0;
     }
 
     void update (
         float dTime, 
-        float desiredDensity,
-        float desiredSpeed,
+        float desiredPower,
         float desiredRotation, 
         sf::Vector2f position
         ) {
             pos = position;
 
             prevRot = rot;
-            rot = desiredRotation;
 
-            float speed = desiredSpeed;
-            float density = desiredDensity;
+            powerChangeSpeed += (desiredPower-prevPower)*dTime;
+            powerChangeSpeed *= 1-0.9*dTime;
+            prevPower = desiredPower;
+
+            angularVelocity += (desiredRotation-prevRot)*dTime*100;
+            angularVelocity *= 0.9;
+            rot += angularVelocity * dTime;
+
+
+            float speed = 2*prevPower;
+            float density = prevPower;
 
             prevTip = tip;
             tip.x = pos.x+cos((rot-90)*DEG_TO_RAD)*30;
@@ -51,19 +63,17 @@ class Sprayer : public sf::Drawable {
 
     void update (
         float dTime,
-        float density,
-        float speed
+        float power
         ) {
-        update(dTime, density, speed, rot, pos);
+        update(dTime, power, this->rot, this->pos);
     }
 
     void update (
         float dTime,
-        float density,
-        float speed,
+        float power,
         float rotation
         ) {
-        update(dTime, density, speed, rotation, pos);
+        update(dTime, power, rotation, this->pos);
     }
 
 
